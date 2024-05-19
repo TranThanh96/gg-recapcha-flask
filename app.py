@@ -1,46 +1,32 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Peter Simeth's basic flask pretty youtube downloader (v1.3)
-https://github.com/petersimeth/basic-flask-template
-© MIT licensed, 2018-2023
-"""
+from urllib import response
+from flask import Flask, render_template, redirect, url_for, request, abort
+import requests
 
-from flask import Flask, render_template
-
-DEVELOPMENT_ENV = True
 
 app = Flask(__name__)
 
-app_data = {
-    "name": "Peter's Starter Template for a Flask Web App",
-    "description": "A basic Flask app using bootstrap for layout",
-    "author": "Peter Simeth",
-    "html_title": "Peter's Starter Template for a Flask Web App",
-    "project_name": "Starter Template",
-    "keywords": "flask, webapp, template, basic",
-}
+
+SITE_KEY = '6LfTZOEpAAAAAP7-jbc8ekdfmC0ULAI2I5od8cCK'
+SECRET_KEY = '6LfTZOEpAAAAACjh_6EbAV13_1mHtr_7tUOPF6H'
+VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
 
 
-@app.route("/")
-def index():
-    return render_template("index.html", app_data=app_data)
+@app.route("/", methods=['GET'])
+def home():
+    return render_template('home.html', site_key=SITE_KEY)
 
 
-@app.route("/about")
-def about():
-    return render_template("about.html", app_data=app_data)
+@app.route("/sign-user-up", methods=['POST'])
+def sign_up_user():
+    secret_response = request.form['g-recaptcha-response']
+
+    verify_response = requests.post(url=f'{VERIFY_URL}?secret={SECRET_KEY}&response={secret_response}').json()
+
+    if verify_response['success'] == False or verify_response['score'] < 0.5:
+        abort(401)
+
+    return redirect(url_for('home'))
 
 
-@app.route("/service")
-def service():
-    return render_template("service.html", app_data=app_data)
-
-
-@app.route("/contact")
-def contact():
-    return render_template("contact.html", app_data=app_data)
-
-
-if __name__ == "__main__":
-    app.run(debug=DEVELOPMENT_ENV)
+if __name__=='__main__':
+    app.run(debug=True)
