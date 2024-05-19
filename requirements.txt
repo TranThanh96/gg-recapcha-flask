@@ -2,3 +2,4 @@
 ###### Requirements without Version Specifiers ######
 Flask
 Gunicorn
+requests
