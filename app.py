@@ -13,7 +13,7 @@ VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
 
 @app.route("/", methods=['GET'])
 def home():
-    return render_template('home.html', site_key=SITE_KEY)
+    return render_template('index.html', site_key=SITE_KEY)
 
 
 @app.route("/sign-user-up", methods=['POST'])
